@@ -1,4 +1,6 @@
-# V2 Task State + Answerability Architecture
+# Historical Architecture Design — V2 Task State + Answerability
+
+> Historical design note written before implementation. Its proposed Task State and Answerability core was implemented in later phases and the public v1.0 release now has 113 automated tests. For the current architecture, see [v1.0 Architecture Overview](overview-v1.0.md) and the root [PRD](../../PRD.md). This document remains as design-history evidence; its V1.1 counts and future-task plan are not current release requirements.
 
 ## 1. Why V2
 

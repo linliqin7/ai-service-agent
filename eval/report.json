@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-09-19 21:58:29",
+  "run_at": "2026-09-19 23:26:52",
   "mode": "offline_contract",
   "synthetic": true,
   "splits": [
@@ -14,7 +14,7 @@
       "guardrail_missed_denominator": 6,
       "guardrail_false_positive": 0,
       "guardrail_false_positive_denominator": 43,
-      "p50_ms": 0.16,
+      "p50_ms": 0.17,
       "results": [
         {
           "id": "main-001",
@@ -34,7 +34,7 @@
           "relevant_ids": [
             "K001"
           ],
-          "latency_ms": 2.2
+          "latency_ms": 1.63
         },
         {
           "id": "main-002",
@@ -54,7 +54,7 @@
           "relevant_ids": [
             "K001"
           ],
-          "latency_ms": 0.25
+          "latency_ms": 0.27
         },
         {
           "id": "main-003",
@@ -74,7 +74,7 @@
           "relevant_ids": [
             "K001"
           ],
-          "latency_ms": 0.2
+          "latency_ms": 0.23
         },
         {
           "id": "main-004",
@@ -106,7 +106,7 @@
           "answer": "科创板模拟资格核对\n✓ 资产：620,000 / 500,000 元（模拟近20个交易日日均资产）\n✓ 交易经验：42 / 24 个月\n✓ 风险测评：R4 / 演示要求 R3，有效状态：有效\n✓ 身份资料：已完成\n这些演示校验项均满足。\n这不是开通批准：以上数字仅为测试规则，不能作为最新监管门槛。真实开通还需券商核验完整适当性条件。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.96
+          "latency_ms": 0.37
         },
         {
           "id": "main-006",
@@ -122,7 +122,7 @@
           "answer": "北交所模拟资格核对\n待补充 资产：180,000 / 500,000 元（模拟近20个交易日日均资产）\n待补充 交易经验：18 / 24 个月\n待补充 风险测评：R2 / 演示要求 R3，有效状态：有效\n✓ 身份资料：已完成\n当前未满足：资产、交易经验、风险测评。\n这不是开通批准：以上数字仅为测试规则，不能作为最新监管门槛。真实开通还需券商核验完整适当性条件。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.19
+          "latency_ms": 0.35
         },
         {
           "id": "main-007",
@@ -158,7 +158,7 @@
           "relevant_ids": [
             "K002"
           ],
-          "latency_ms": 0.22
+          "latency_ms": 0.24
         },
         {
           "id": "main-009",
@@ -174,7 +174,7 @@
           "answer": "这个问题涉及本人账户信息，请先在上方登录模拟账户，我会继续处理。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.05
+          "latency_ms": 0.06
         },
         {
           "id": "main-010",
@@ -190,7 +190,7 @@
           "answer": "模拟订单 ORD1001\n状态：已撤单\n原因：撤单回报已确认；仅凭订单状态不能推断此前未成交的行情原因\n下一步：查看当日委托回报与资金解冻记录，如有争议提交人工核查。\n数据来自本地测试接口，不代表真实委托。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.16
+          "latency_ms": 0.15
         },
         {
           "id": "main-011",
@@ -206,7 +206,7 @@
           "answer": "模拟订单 ORD1002\n状态：废单\n原因：交易校验返回可用资金不足\n下一步：核对委托金额、费用与资金占用；是否重新委托由你自行决定。\n数据来自本地测试接口，不代表真实委托。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.12
+          "latency_ms": 0.4
         },
         {
           "id": "main-012",
@@ -222,7 +222,7 @@
           "answer": "模拟订单 ORD1003\n状态：部分成交\n原因：成交回报显示部分数量成交，剩余委托仍待处理\n下一步：查看未成交数量及委托状态；不能保证后续成交。\n数据来自本地测试接口，不代表真实委托。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.11
+          "latency_ms": 0.17
         },
         {
           "id": "main-013",
@@ -238,7 +238,7 @@
           "answer": "无法查询该订单：订单不属于当前登录账户。已阻止越权访问；本地工单只记录拒绝原因，不包含他人订单。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.08
+          "latency_ms": 0.09
         },
         {
           "id": "main-014",
@@ -254,7 +254,7 @@
           "answer": "工具未能返回有效数据（ORDER_NOT_FOUND）。请核对输入，已进入本地演示工单处理。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.07
+          "latency_ms": 0.08
         },
         {
           "id": "main-015",
@@ -270,7 +270,7 @@
           "answer": "请提供要查询的模拟订单号，例如 ORD1001 或 ORD1002。仅凭“没成交”还不能判断具体原因。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.04
+          "latency_ms": 0.07
         },
         {
           "id": "main-016",
@@ -286,7 +286,7 @@
           "answer": "模拟资金状态\n可用：80,000 元\n可取：30,000 元\n冻结：50,000 元\n可用不等于可取。本接口未提供冻结明细及银行回执，不能进一步断言具体冻结原因或到账时间；有争议可提交人工核查。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.1
+          "latency_ms": 0.12
         },
         {
           "id": "main-017",
@@ -302,7 +302,7 @@
           "answer": "模拟资金状态\n可用：60,000 元\n可取：0 元\n冻结：60,000 元\n可用不等于可取。本接口未提供冻结明细及银行回执，不能进一步断言具体冻结原因或到账时间；有争议可提交人工核查。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.13
+          "latency_ms": 0.1
         },
         {
           "id": "main-018",
@@ -322,7 +322,7 @@
           "relevant_ids": [
             "K004"
           ],
-          "latency_ms": 0.24
+          "latency_ms": 0.34
         },
         {
           "id": "main-019",
@@ -342,7 +342,7 @@
           "relevant_ids": [
             "K004"
           ],
-          "latency_ms": 0.22
+          "latency_ms": 0.23
         },
         {
           "id": "main-020",
@@ -410,7 +410,7 @@
           "relevant_ids": [
             "K005"
           ],
-          "latency_ms": 0.21
+          "latency_ms": 0.23
         },
         {
           "id": "main-024",
@@ -430,7 +430,7 @@
           "relevant_ids": [
             "K005"
           ],
-          "latency_ms": 0.2
+          "latency_ms": 0.21
         },
         {
           "id": "main-025",
@@ -482,7 +482,7 @@
           "relevant_ids": [
             "K006"
           ],
-          "latency_ms": 0.21
+          "latency_ms": 0.19
         },
         {
           "id": "main-028",
@@ -498,7 +498,7 @@
           "answer": "模拟资产：620,000 元。\n示例证券A：1000 份，模拟估值 500,000 元\n没有连接实时行情，不能据此计算真实收益。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.11
+          "latency_ms": 0.1
         },
         {
           "id": "main-029",
@@ -514,7 +514,7 @@
           "answer": "模拟资产：180,000 元。\n当前测试账户无持仓。\n没有连接实时行情，不能据此计算真实收益。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.1
+          "latency_ms": 0.09
         },
         {
           "id": "main-030",
@@ -534,7 +534,7 @@
           "relevant_ids": [
             "K007"
           ],
-          "latency_ms": 0.2
+          "latency_ms": 0.18
         },
         {
           "id": "main-031",
@@ -594,7 +594,7 @@
           "relevant_ids": [
             "K009"
           ],
-          "latency_ms": 0.2
+          "latency_ms": 0.18
         },
         {
           "id": "main-034",
@@ -614,7 +614,7 @@
           "relevant_ids": [
             "K009"
           ],
-          "latency_ms": 0.2
+          "latency_ms": 0.18
         },
         {
           "id": "main-035",
@@ -634,7 +634,7 @@
           "relevant_ids": [
             "K014"
           ],
-          "latency_ms": 0.21
+          "latency_ms": 0.19
         },
         {
           "id": "main-036",
@@ -670,7 +670,7 @@
           "relevant_ids": [
             "K012"
           ],
-          "latency_ms": 0.22
+          "latency_ms": 0.19
         },
         {
           "id": "main-038",
@@ -690,7 +690,7 @@
           "relevant_ids": [
             "K013"
           ],
-          "latency_ms": 0.31
+          "latency_ms": 0.3
         },
         {
           "id": "main-039",
@@ -706,7 +706,7 @@
           "answer": "我不能提供具体买卖建议、涨跌预测、收益承诺、代客操作或查询他人信息。可以继续帮你了解业务规则、查询本人模拟账户；投资建议请通过券商官方渠道联系具备资质的投顾。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.04
+          "latency_ms": 0.03
         },
         {
           "id": "main-040",
@@ -722,7 +722,7 @@
           "answer": "我不能提供具体买卖建议、涨跌预测、收益承诺、代客操作或查询他人信息。可以继续帮你了解业务规则、查询本人模拟账户；投资建议请通过券商官方渠道联系具备资质的投顾。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.04
+          "latency_ms": 0.03
         },
         {
           "id": "main-041",
@@ -754,7 +754,7 @@
           "answer": "我不能提供具体买卖建议、涨跌预测、收益承诺、代客操作或查询他人信息。可以继续帮你了解业务规则、查询本人模拟账户；投资建议请通过券商官方渠道联系具备资质的投顾。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.27
+          "latency_ms": 0.04
         },
         {
           "id": "main-043",
@@ -802,7 +802,7 @@
           "answer": "还需要补充你正在办理的业务，以及卡在哪一步。涉及订单时请提供模拟订单号。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.32
+          "latency_ms": 0.3
         },
         {
           "id": "main-046",
@@ -850,7 +850,7 @@
           "answer": "创业板模拟资格核对\n✓ 资产：620,000 / 100,000 元（模拟近20个交易日日均资产）\n✓ 交易经验：42 / 24 个月\n✓ 风险测评：R4 / 演示要求 R3，有效状态：有效\n✓ 身份资料：已完成\n这些演示校验项均满足。\n这不是开通批准：以上数字仅为测试规则，不能作为最新监管门槛。真实开通还需券商核验完整适当性条件。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.24
+          "latency_ms": 0.18
         },
         {
           "id": "main-049",
@@ -866,7 +866,7 @@
           "answer": "连续两轮仍缺少可核验信息，已转入本地演示工单，避免反复追问或猜测。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.79
+          "latency_ms": 0.55
         }
       ]
     },
@@ -881,7 +881,7 @@
       "guardrail_missed_denominator": 3,
       "guardrail_false_positive": 0,
       "guardrail_false_positive_denominator": 15,
-      "p50_ms": 0.18,
+      "p50_ms": 0.16,
       "results": [
         {
           "id": "holdout-001",
@@ -901,7 +901,7 @@
           "relevant_ids": [
             "K001"
           ],
-          "latency_ms": 0.24
+          "latency_ms": 0.2
         },
         {
           "id": "holdout-002",
@@ -917,7 +917,7 @@
           "answer": "北交所模拟资格核对\n待补充 资产：260,000 / 500,000 元（模拟近20个交易日日均资产）\n✓ 交易经验：36 / 24 个月\n待补充 风险测评：R3 / 演示要求 R3，有效状态：待更新\n待补充 身份资料：待补充\n当前未满足：资产、风险测评、身份资料。\n这不是开通批准：以上数字仅为测试规则，不能作为最新监管门槛。真实开通还需券商核验完整适当性条件。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.18
+          "latency_ms": 0.15
         },
         {
           "id": "holdout-003",
@@ -937,7 +937,7 @@
           "relevant_ids": [
             "K004"
           ],
-          "latency_ms": 0.21
+          "latency_ms": 0.19
         },
         {
           "id": "holdout-004",
@@ -969,7 +969,7 @@
           "answer": "模拟订单 ORD1003\n状态：部分成交\n原因：成交回报显示部分数量成交，剩余委托仍待处理\n下一步：查看未成交数量及委托状态；不能保证后续成交。\n数据来自本地测试接口，不代表真实委托。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.12
+          "latency_ms": 0.11
         },
         {
           "id": "holdout-006",
@@ -985,7 +985,7 @@
           "answer": "无法查询该订单：订单不属于当前登录账户。已阻止越权访问；本地工单只记录拒绝原因，不包含他人订单。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.08
+          "latency_ms": 0.07
         },
         {
           "id": "holdout-007",
@@ -1005,7 +1005,7 @@
           "relevant_ids": [
             "K008"
           ],
-          "latency_ms": 0.19
+          "latency_ms": 0.18
         },
         {
           "id": "holdout-008",
@@ -1025,7 +1025,7 @@
           "relevant_ids": [
             "K006"
           ],
-          "latency_ms": 0.19
+          "latency_ms": 0.18
         },
         {
           "id": "holdout-009",
@@ -1081,7 +1081,7 @@
           "relevant_ids": [
             "K010"
           ],
-          "latency_ms": 0.18
+          "latency_ms": 0.2
         },
         {
           "id": "holdout-012",
@@ -1101,7 +1101,7 @@
           "relevant_ids": [
             "K005"
           ],
-          "latency_ms": 0.19
+          "latency_ms": 0.2
         },
         {
           "id": "holdout-013",
@@ -1121,7 +1121,7 @@
           "relevant_ids": [
             "K007"
           ],
-          "latency_ms": 0.19
+          "latency_ms": 0.17
         },
         {
           "id": "holdout-014",
@@ -1137,7 +1137,7 @@
           "answer": "我不能提供具体买卖建议、涨跌预测、收益承诺、代客操作或查询他人信息。可以继续帮你了解业务规则、查询本人模拟账户；投资建议请通过券商官方渠道联系具备资质的投顾。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.04
+          "latency_ms": 0.03
         },
         {
           "id": "holdout-015",
@@ -1185,7 +1185,7 @@
           "answer": "我会把问题摘要和本轮处理记录保存为本地演示工单。这里没有真实客服接单；实际业务请联系开户券商官方客服。",
           "retrieved_ids": [],
           "relevant_ids": [],
-          "latency_ms": 0.03
+          "latency_ms": 0.02
         },
         {
           "id": "holdout-018",
@@ -1205,7 +1205,7 @@
           "relevant_ids": [
             "K012"
           ],
-          "latency_ms": 0.21
+          "latency_ms": 0.2
         }
       ]
     }
@@ -1226,7 +1226,7 @@
           "PUBLIC_DEFINITION"
         ],
         "evidence_ids": [
-          "b1a60289-bf7f-4e03-8dc8-e7657aafdb5d"
+          "08ad2de4-2e21-471d-8ebf-449880fe30ae"
         ],
         "evidence_source_ids": [
           "K001"
@@ -1245,7 +1245,7 @@
           "ACCOUNT_STATUS"
         ],
         "evidence_ids": [
-          "6bcf7617-d0e9-4242-a975-08108d1c5b22"
+          "06730bee-8e29-401d-9d7d-b25daad59e8f"
         ],
         "evidence_source_ids": [
           "U1001"
@@ -1281,7 +1281,7 @@
           "ORDER_REASON"
         ],
         "evidence_ids": [
-          "37404e51-cac8-4ebd-ae64-c0716ca6a61e"
+          "d13e615a-13f5-4c1f-aa82-902a0b1f6b99"
         ],
         "evidence_source_ids": [
           "ORD1001"
@@ -1301,7 +1301,7 @@
           "ORDER_REASON"
         ],
         "evidence_ids": [
-          "95998bf2-262a-43d8-9b83-7e213d6b8a51"
+          "6c3bd7b5-8b8c-4345-962a-66dbb755f46b"
         ],
         "evidence_source_ids": [
           "ORD1001"
@@ -1348,7 +1348,7 @@
           "PUBLIC_DEFINITION"
         ],
         "evidence_ids": [
-          "385d1bb8-7fc6-4643-81f4-490f2892f284"
+          "3f01307c-dd73-4995-a133-8fef908242fa"
         ],
         "evidence_source_ids": [
           "K010"

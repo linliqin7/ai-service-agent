@@ -1,6 +1,6 @@
 # AI Service Agent
 
-一个以证券客户服务为验证场景的 AI Service Agent prototype。项目展示 Task State、受证据约束的回答、Answerability、受控 Tool Calling、知识治理、风险拒答和本地人工转接；账户、订单、资金和券商规则均为模拟数据。
+AI Service Agent, validated in a securities brokerage customer-service scenario. This prototype demonstrates Task State, evidence-grounded responses, Answerability, controlled tool calling, knowledge governance, risk rejection, traceability, and local human handoff; all accounts, orders, funds, and rules are simulated.
 
 ## Why this project
 
@@ -11,14 +11,14 @@
 ```text
 User
   → Task State
-  → Router
+  → Router / Workflow
   → Knowledge / Tools
   → Evidence
-  → Answerability
+  → Answerability Gate
   → Response / Handoff
 ```
 
-详细设计见 [V2 Task State + Answerability Architecture](docs/architecture/v2-task-state-answerability.md)。实现位于 `app/`，本地页面位于 `web/`，受控知识 fixture 位于 `app/rag/fixtures/`。
+当前产品规范见 [PRD v1.0](PRD.md)，架构总览见 [v1.0 Architecture Overview](docs/architecture/overview-v1.0.md)；历史设计演进见 [V2 Task State + Answerability Architecture](docs/architecture/v2-task-state-answerability.md)。实现位于 `app/`，本地页面位于 `web/`，受控知识 fixture 位于 `app/rag/fixtures/`。
 
 ## Local setup
 
