@@ -57,7 +57,7 @@ def render_facts(observations,intent):
     if intent=='order':
         o=by.get('get_order_detail')
         if not o:return None
-        answer=f"模拟订单 {o['order_id']}\n状态：{o['status']}\n原因：{o['reason']}\n下一步：{o['next']}。\n数据来自本地测试接口，不代表真实委托。"
+        answer=f"模拟订单 {o['order_id']}\n状态：{o['status']}\n原因：{o.get('reason') or '当前接口未提供原因'}\n下一步：{o.get('next') or '请通过官方渠道核查'}。\n数据来自本地测试接口，不代表真实委托。"
         return _append_knowledge_evidence(answer,knowledge)
     names={'account':'get_account','funds':'get_funds','risk':'get_risk','holdings':'get_holdings'}
     d=by.get(names.get(intent,''))

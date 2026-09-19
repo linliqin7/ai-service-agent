@@ -1,0 +1,11 @@
+[
+  {"id":"v2-public", "turns":["开户需要什么材料"], "label":"sufficient", "required_supports":["PUBLIC_DEFINITION"], "expected_next_action":"answer", "evidence_sources":["K001"]},
+  {"id":"v2-account", "user_id":"U1001", "turns":["我的账户状态"], "label":"sufficient", "required_supports":["ACCOUNT_STATUS"], "expected_next_action":"answer", "evidence_sources":["U1001"]},
+  {"id":"v2-order-slot", "turns":["我的订单为什么没成交"], "label":"missing_user_information", "required_supports":["ORDER_STATUS","ORDER_REASON"], "expected_next_action":"clarify", "evidence_sources":[]},
+  {"id":"v2-order-facts", "user_id":"U1001", "turns":["ORD1001为什么没成交"], "label":"sufficient", "required_supports":["ORDER_STATUS","ORDER_REASON"], "expected_next_action":"answer", "evidence_sources":["ORD1001"]},
+  {"id":"v2-missing-reason", "user_id":"U1001", "turns":["我的订单为什么没成交","ORD1001"], "order_status_only":true, "label":"missing_business_evidence", "required_supports":["ORDER_STATUS","ORDER_REASON"], "expected_next_action":"handoff", "evidence_sources":["ORD1001"]},
+  {"id":"v2-not-owner", "user_id":"U1002", "turns":["ORD1001"], "label":"unauthorized", "required_supports":["ORDER_STATUS"], "expected_next_action":"handoff", "evidence_sources":[]},
+  {"id":"v2-unsafe", "turns":["推荐我买哪只股票"], "label":"unsafe", "required_supports":[], "expected_next_action":"reject", "evidence_sources":[]},
+  {"id":"v2-switch", "user_id":"U1001", "turns":["ORD1001","基金赎回多久到账"], "label":"sufficient", "required_supports":["PUBLIC_DEFINITION"], "expected_next_action":"answer", "forbidden_evidence_sources":["ORD1001"]},
+  {"id":"v2-unknown", "turns":["这个怎么弄","就是那个"], "label":"out_of_scope", "required_supports":[], "expected_next_action":"handoff", "evidence_sources":[]}
+]
