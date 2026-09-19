@@ -11,6 +11,7 @@ from app.config import Settings
 from app.llm.deepseek import DeepSeekClient
 from app.data.repository import USERS,profile
 from app.rag.retriever import records
+from app.rag.governance import current
 from app.storage import Store
 ROOT=Path(__file__).resolve().parents[1]
 settings=Settings()
@@ -113,7 +114,7 @@ def tickets(sid:str):session(sid);return store.tickets(sid)
 def feedback(sid:str,body:Feedback):
     session(sid);store.feedback(sid,body.trace_id,body.rating);return {'saved':True}
 @app.get('/api/knowledge')
-def knowledge():return records()
+def knowledge():return [record for record in records() if current(record,audience='public')]
 @app.get('/api/evaluation')
 def evaluation():
     p=ROOT/'eval'/'report.json'

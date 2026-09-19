@@ -4,12 +4,17 @@ from datetime import datetime,timezone
 from app.schemas import TraceEvent,AgentResponse
 from app.runtime.router import route,order_id,public_definition
 from app.runtime.policy import normalize,redact,risk_reason,unsafe_output,REJECTION,evidence_supported
-from app.runtime.tools import execute,render_facts,DESCRIPTIONS
+from app.runtime.tools import execute,render_facts,knowledge_citations,DESCRIPTIONS
 from app.rag.retriever import search
 from app.llm.deepseek import CALLS
 
 PRIVATE={'qualification','order','account','funds','risk','holdings'}
 TOOLS={'qualification':['get_profile','get_rule'],'order':['get_order_detail','search_knowledge'], 'account':['get_account'],'funds':['get_funds','search_knowledge'],'risk':['get_risk'],'holdings':['get_holdings']}
+
+def reset_pending_task_context(session):
+    """Clear only transient task slots; identity, messages and traces live elsewhere."""
+    session.pending_slots.clear()
+
 class Engine:
     def __init__(self,llm=None): self.llm=llm
 
@@ -23,9 +28,9 @@ class Engine:
         add('input_policy',result='blocked' if intent=='reject' else 'passed')
         try:
             if intent=='reject':
-                ans=REJECTION;status='rejected';add('risk_block',rule=decision.get('reason'))
+                ans=REJECTION;status='rejected';reset_pending_task_context(s);add('risk_block',rule=decision.get('reason'))
             elif intent=='handoff':
-                ans='我会把问题摘要和本轮处理记录保存为本地演示工单。这里没有真实客服接单；实际业务请联系开户券商官方客服。';status='handoff'
+                ans='我会把问题摘要和本轮处理记录保存为本地演示工单。这里没有真实客服接单；实际业务请联系开户券商官方客服。';status='handoff';reset_pending_task_context(s)
             else:
                 if intent=='rules':
                     if self.llm and not public_definition(q) and q not in ('开户需要什么材料','开户需要什么材料？'):
@@ -38,8 +43,8 @@ class Engine:
                         docs=search(q)
                         if not docs:intent='unknown'
                 add('route',pipeline=('Agent Loop' if self.llm else '受控工具流程') if intent in PRIVATE else ('RAG' if docs else intent),intent=intent)
-                if intent=='reject':ans=REJECTION;status='rejected';add('risk_block',rule='模型风险分类')
-                elif intent=='handoff':ans='该问题需要进一步核查，已进入本地演示工单流程。没有真实坐席接单。';status='handoff'
+                if intent=='reject':ans=REJECTION;status='rejected';reset_pending_task_context(s);add('risk_block',rule='模型风险分类')
+                elif intent=='handoff':ans='该问题需要进一步核查，已进入本地演示工单流程。没有真实坐席接单。';status='handoff';reset_pending_task_context(s)
                 elif intent in PRIVATE:
                     # Never trust model-supplied identifiers that the user did not actually provide.
                     if intent=='order':
@@ -54,7 +59,9 @@ class Engine:
                     else:
                         add('auth',result='simulation_verified',user_id=s.user_id)
                         ans,status,observations=self._diagnose(s,q,intent,decision,add,start,calls)
-                        if status=='answered':s.pending_slots={}
+                        if status=='answered':
+                            docs=knowledge_citations(observations)
+                            reset_pending_task_context(s)
                 elif docs:
                     add('retrieve',method='关键词+中文双字词项排序',query=q,citations=[d['id'] for d in docs],version=[d['version'] for d in docs])
                     ans=docs[0]['text']
@@ -71,6 +78,7 @@ class Engine:
                         if not evidence_supported(g.answer,cited):raise ValueError('unsupported_generated_claim')
                         ans=g.answer;docs=cited
                     add('generation',mode='reviewed_FAQ' if faq else ('DeepSeek_evidence_selection' if self.llm else 'evidence_extract'))
+                    reset_pending_task_context(s)
                 else:
                     prior=s.pending_slots.get('clarifications',0)
                     status='handoff' if prior>=1 else 'clarify'
