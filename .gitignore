@@ -1,0 +1,36 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local databases and runtime data
+*.db
+*.sqlite
+*.sqlite3
+var/
+logs/
+tmp/
+cache/
+
+# Evaluation/runtime outputs containing local or live-service data
+eval/live-report.json
+
+# Logs and local outputs
+*.log
+*.tmp
+*.swp
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
+*.code-workspace
