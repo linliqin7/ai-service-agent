@@ -7,9 +7,55 @@ from app.runtime.policy import normalize,redact,risk_reason,unsafe_output,REJECT
 from app.runtime.tools import execute,render_facts,knowledge_citations,DESCRIPTIONS
 from app.rag.retriever import search
 from app.llm.deepseek import CALLS
+from app.schemas import EntityValue,SessionState,TaskState,TaskStatus
+from app.runtime.task_manager import (abandon_task,complete_task,create_task,
+    handoff_task,increment_clarification,reject_task,set_clarifying,set_entity,
+    set_executing,update_missing_slots)
 
 PRIVATE={'qualification','order','account','funds','risk','holdings'}
 TOOLS={'qualification':['get_profile','get_rule'],'order':['get_order_detail','search_knowledge'], 'account':['get_account'],'funds':['get_funds','search_knowledge'],'risk':['get_risk'],'holdings':['get_holdings']}
+
+TASK_REQUIRED={'qualification':['board','authentication'],'order':['order_id','authentication'],
+               'account':['authentication'],'funds':['authentication'],'risk':['authentication'],
+               'holdings':['authentication']}
+
+def _task_domain(intent):
+    return {'rules':'knowledge','qualification':'qualification','order':'trading',
+            'account':'account','funds':'funds','risk':'risk','holdings':'holdings'}.get(intent)
+
+def _missing_slots(task,session):
+    missing=[]
+    if 'order_id' in task.required_slots and 'order_id' not in task.entities:missing.append('order_id')
+    if 'board' in task.required_slots and 'board' not in task.entities:missing.append('board')
+    if 'authentication' in task.required_slots and not session.authenticated:missing.append('authentication')
+    return missing
+
+def _ensure_active_task(session: SessionState, intent: str, query: str) -> TaskState:
+    task=session.active_task
+    terminal={TaskStatus.COMPLETED,TaskStatus.HANDOFF,TaskStatus.REJECTED,TaskStatus.ABANDONED}
+    if task is None or task.status in terminal or task.task_type != intent:
+        if task is not None and task.status not in terminal:
+            abandon_task(task,'new_task')
+        task=create_task(intent,query,_task_domain(intent),TASK_REQUIRED.get(intent,[]))
+        session.active_task=task
+    set_executing(task)
+    if intent=='order':
+        oid=order_id(query)
+        if oid:
+            set_entity(task,EntityValue(name='order_id',value=oid,source='user',confirmed=False))
+    if intent=='qualification':
+        board=next((b for b in ['创业板','科创板','北交所'] if b in query),'')
+        if board:
+            set_entity(task,EntityValue(name='board',value=board,source='user',confirmed=False))
+    update_missing_slots(task,_missing_slots(task,session))
+    return task
+
+def _sync_task_status(task,status,reason=None):
+    if status=='answered':return complete_task(task,reason or 'answered')
+    if status in ('clarify','need_auth'):return set_clarifying(task)
+    if status=='handoff':return handoff_task(task,reason or 'handoff')
+    if status=='rejected':return reject_task(task,reason or 'rejected')
+    return task
 
 def reset_pending_task_context(session):
     """Clear only transient task slots; identity, messages and traces live elsewhere."""
@@ -25,6 +71,7 @@ class Engine:
         if q in ('继续','继续查询','已登录') and s.pending_slots.get('query'):q=s.pending_slots['query']
         if s.pending_slots.get('intent')=='qualification' and q in ('创业板','科创板','北交所'):q='我能不能开'+q
         decision=route(q);intent=decision['intent'];docs=[];status='answered';ans='';observations=[]
+        task=_ensure_active_task(s,intent,q)
         add('input_policy',result='blocked' if intent=='reject' else 'passed')
         try:
             if intent=='reject':
@@ -37,11 +84,14 @@ class Engine:
                         d=self.llm.classify(q,[{'role':m['role'],'content':m['content']} for m in s.messages[-5:-1]]);add('llm_route',decision=d)
                         if d['confidence']>=.65:
                             intent=d['intent_id'];decision={'intent':intent,**d.get('slots',{})}
+                            task.task_type=intent;task.domain=_task_domain(intent)
                             if intent=='rules':docs=search(q,domain=d.get('domain') or None)
                         else:intent='unknown'
                     else:
                         docs=search(q)
                         if not docs:intent='unknown'
+                    if task.task_type!=intent:
+                        task.task_type=intent;task.domain=_task_domain(intent)
                 add('route',pipeline=('Agent Loop' if self.llm else '受控工具流程') if intent in PRIVATE else ('RAG' if docs else intent),intent=intent)
                 if intent=='reject':ans=REJECTION;status='rejected';reset_pending_task_context(s);add('risk_block',rule='模型风险分类')
                 elif intent=='handoff':ans='该问题需要进一步核查，已进入本地演示工单流程。没有真实坐席接单。';status='handoff';reset_pending_task_context(s)
@@ -80,10 +130,11 @@ class Engine:
                     add('generation',mode='reviewed_FAQ' if faq else ('DeepSeek_evidence_selection' if self.llm else 'evidence_extract'))
                     reset_pending_task_context(s)
                 else:
-                    prior=s.pending_slots.get('clarifications',0)
+                    prior=task.clarification_count
                     status='handoff' if prior>=1 else 'clarify'
                     ans='还需要补充你正在办理的业务，以及卡在哪一步。涉及订单时请提供模拟订单号。' if status=='clarify' else '连续两轮仍缺少可核验信息，已转入本地演示工单，避免反复追问或猜测。'
-                    s.pending_slots={'clarifications':prior+1}
+                    increment_clarification(task)
+                    s.pending_slots={'clarifications':task.clarification_count}
         except Exception as exc:
             # Only stable error codes and class names enter traces; never raw provider bodies.
             code=str(exc) if re.fullmatch(r'[a-z_0-9]{1,60}',str(exc)) else type(exc).__name__
@@ -95,6 +146,7 @@ class Engine:
         output_blocked=unsafe_output(ans)
         if output_blocked:
             ans='输出安全检查未通过，本轮不展示生成内容；已进入本地演示工单处理。';status='handoff';add('output_block',rule='禁止建议或敏感信息')
+        _sync_task_status(task,status)
         add('guardrail',result='blocked' if status=='rejected' or output_blocked else 'passed',policy_version='local-policy-v2')
         for call in calls:add('llm',**call)
         elapsed=round((time.monotonic()-start)*1000)
@@ -132,5 +184,9 @@ class Engine:
             if result.get('error'):
                 if result['error']=='NOT_OWNER':return '无法查询该订单：订单不属于当前登录账户。已阻止越权访问；本地工单只记录拒绝原因，不包含他人订单。','handoff',observations
                 return '工具未能返回有效数据（'+result['error']+'）。请核对输入，已进入本地演示工单处理。','handoff',observations
+            if name=='get_order_detail' and s.active_task is not None:
+                entity=s.active_task.entities.get('order_id')
+                if entity is not None and entity.value==args.get('order_id'):
+                    set_entity(s.active_task,entity.model_copy(update={'confirmed':True}))
             observations.append({'name':name,'result':result})
         raise ValueError('max_loop_steps')
