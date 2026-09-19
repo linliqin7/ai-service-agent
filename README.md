@@ -1,67 +1,88 @@
-# 经纪业务智能客服 Agent
+# AI Service Agent
 
-一个可以实际运行的个人金融客服项目：FastAPI + 原生 Web 界面 + DeepSeek + 受控工具执行 + 版本化知识检索 + SQLite 会话与工单。所有账户、资产和订单为模拟数据。
+一个以证券客户服务为验证场景的 AI Service Agent prototype。项目展示 Task State、受证据约束的回答、Answerability、受控 Tool Calling、知识治理、风险拒答和本地人工转接；账户、订单、资金和券商规则均为模拟数据。
 
-## 直接使用
+## Why this project
 
-双击本目录的 `启动项目.command`，然后打开 **http://127.0.0.1:8000**。
+金融客服问题通常同时需要识别任务、补齐信息、查询受控工具、引用知识并判断证据是否足够。这个项目把这些步骤放在一个可离线运行、可测试的本地演示中，用来验证工作流边界，而不是提供真实金融服务。
 
-- 若服务已经运行，直接打开网页即可，不必重复启动。
-- macOS 启动器优先读取环境变量，再读取系统钥匙串中服务名 `brokerage-support-agent.deepseek` 对应的凭据；源码不保存密钥。
-- 没有密钥时自动进入本地规则模式。关闭网络后，静态页面、确定性路由和模拟工具仍可工作；模型调用失败会降级。
-- 本项目需要本地 Python 服务，不是双击 HTML 的纯静态原型。
-- 首次在新电脑运行，启动器会建立虚拟环境并安装 `requirements.txt`。
+## Architecture
 
-## 建议检查顺序
+```text
+User
+  → Task State
+  → Router
+  → Knowledge / Tools
+  → Evidence
+  → Answerability
+  → Response / Handoff
+```
 
-1. 访客输入“推荐我买哪只股票”：直接拒答，处理记录显示风险规则。
-2. 输入“开户需要什么材料”：展示审核过的说明与引用。
-3. 输入“我能不能开创业板”：先要求登录；选择 U1002 登录后自动继续。模型选择画像和规则工具，事实由代码逐项核对。
-4. 输入“我的委托为什么没成”：澄清订单号；再输入 ORD1002，返回废单及资金不足原因。
-5. 保持 U1002 查询 ORD1001：阻止越权，不把他人数据交给模型。
-6. 创建本地工单；在“服务工单”查看摘要。在“知识依据”检索来源与版本，在“评测结果”查看逐条结果。
-7. 切换 U1003 查询“我的开户进度到哪了”；切换 U1004 查询“我的风险测评有效吗”。
+详细设计见 [V2 Task State + Answerability Architecture](docs/architecture/v2-task-state-answerability.md)。实现位于 `app/`，本地页面位于 `web/`，受控知识 fixture 位于 `app/rag/fixtures/`。
 
-| 模拟账户 | 资产维度 | 生命周期 | 可检查的差异 |
-|---|---|---|---|
-| U1001 | 30万以下 | 已入金未交易 | 经验与风险等级未满足演示权限规则；ORD1001 已撤单 |
-| U1002 | 50–100万 | 活跃交易 | 演示校验项满足；ORD1002 废单、ORD1003 部分成交 |
-| U1003 | 30万以下 | 开户审核中 | 身份资料待复核 |
-| U1004 | 30万以下 | 账户维护 | 证件、测评待更新；可取资金为零 |
+## Local setup
 
-## 验证与开发
+需要 Python 3.11+。不配置模型密钥也可以运行本地规则模式、模拟工具和离线评测。
 
 ```bash
-.venv/bin/pytest -q
+python -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
+`.env` 中的 `DEEPSEEK_API_KEY` 是可选项。不要提交 `.env`，不要把真实客户资料、账号、密码、验证码或交易凭据放入本项目。配置密钥后，服务可能访问外部模型服务；本仓库的测试和离线评测不会调用外部 API。
+
+启动本地服务：
+
+```bash
+.venv/bin/python -m uvicorn app.api:app --host 127.0.0.1 --port 8000
+```
+
+然后打开 http://127.0.0.1:8000。也可以运行已有的 `scripts/start.py` 或 macOS 启动器；服务只监听本机地址。
+
+## Demo flow
+
+```text
+User question
+  → task recognition and clarification
+  → controlled tool / lexical RAG retrieval
+  → task-bound verified evidence
+  → deterministic answerability gate
+  → answer, clarify, reject, retrieve, or local handoff
+```
+
+典型演示包括公共“未成交”定义、本人账户状态、订单状态和归属校验、风险拒答，以及证据不足时不猜测订单原因。
+
+## Tests and evaluation
+
+```bash
+.venv/bin/python -m pytest -q
 PYTHONPATH=. .venv/bin/python eval/run.py
-.venv/bin/python -m compileall -q app
-node --check web/app.js
+.venv/bin/python -m compileall -q app tests eval
 ```
 
-真实模型验收（会调用 DeepSeek 并产生服务商计费）：
+当前本地结果：113 passed；离线评测 main 49/49、holdout 18/18、answerability 9/9。它们是 synthetic / deterministic evaluation on controlled fixtures，不是 production accuracy、真实客户满意度或真实金融正确率。
 
-```bash
-PYTHONPATH=. .venv/bin/python scripts/smoke_live.py
-```
+## Project map
 
-该脚本从环境变量或本机钥匙串读取凭据，输出到 `eval/live-report.json`；只记录模拟业务数据、响应、模型标识和 token 统计。离线评测不调用外部 API。
+- `app/runtime/engine.py`：任务编排、工具执行、证据 gate 和响应流程。
+- `app/runtime/evidence.py`、`app/runtime/answerability.py`：证据晋升和确定性充分性判断。
+- `app/runtime/tools.py`：工具白名单、参数校验、模拟业务事实。
+- `app/rag/`：治理规则、轻量词项检索和演示知识。
+- `tests/`：离线行为、集成和回归测试。
+- `eval/`：合成主集、留出集和 Answerability 契约评测。
+- `docs/`：架构、审计和交付记录。
 
-## 文件导览
+## Limitations and disclaimer
 
-- `app/runtime/engine.py`：统一路由、生成、护栏和审计。
-- `app/runtime/tools.py`：白名单、参数验证、账户归属与事实答复。
-- `app/llm/deepseek.py`：结构化模型输出、有限重试、超时和用量记录。
-- `app/rag/`：演示知识、有效期过滤、词项检索、导入与冲突检测。
-- `app/storage.py`：本地会话、反馈和工单持久化。
-- `web/`：对话、画像、工单、知识、评测、处理记录。
-- `eval/`：主集、留出集、离线和真实模型验收记录。
-- `docs/项目交付与验收.md`：能力边界及检查清单。
-- `docs/架构与取舍.md`：架构、控制边界和 Agent 理论。
-- `docs/评测与BadCase复盘.md`：指标口径与修复闭环。
-- `docs/面试讲解与追问.md`：5 分钟叙事、追问和事实边界。
+- Brokerage data is simulated; there is no real customer account access or real trading execution.
+- The knowledge corpus is curated demo data, not a complete or continuously verified regulatory corpus.
+- The retriever is lightweight lexical retrieval, not semantic vector search; public knowledge sufficiency is not full semantic understanding.
+- Human handoff is a local/demo workflow and does not create a real support ticket or contact a live agent.
+- Evaluation is synthetic and deterministic on controlled fixtures.
+- This project is not production financial advice, a production brokerage system, or an enterprise financial platform.
+- Do not use it with real customer data, credentials, identity documents, passwords, verification codes, or trading decisions.
 
-## 准确理解完成范围
+## License
 
-完成的是**可运行、可检查的个人项目**。真实的部分是模型调用、业务编排、检索代码、权限检查、页面交互、存储与评测。模拟的部分是账户数据、交易数据、演示规则和工单受理。
-
-知识库当前有 14 条演示服务说明，不是全量已核验监管知识库；实际检索为关键词及中文双字词项排序，没有冒充语义向量数据库。没有连接真实券商、行情、银行、客服坐席或交易执行系统。不能把本地演示登录表述为生产身份认证，不能把测试通过率表述为线上解决率。
+Released under the [MIT License](LICENSE). The repository contains original project code and curated local fixtures; no third-party source attribution is asserted beyond the dependencies listed in `requirements.txt` and `requirements-lock.txt`.
