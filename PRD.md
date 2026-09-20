@@ -38,7 +38,7 @@ User Goal
 
 当前项目没有真实客服日志、生产用户数据或商业 ROI 数据，不对市场规模、人工节省、一次解决率或客户满意度作出结论。
 
-## 4. Core Product Model
+## 4. 核心任务机制
 
 ### Task State
 
@@ -81,7 +81,7 @@ Answerability 是产品的最终决策机制，判断当前 task 的必要支持
 
 例如，订单状态为“未成交”但工具没有返回个人原因时，公共“未成交是什么意思”的定义只能作为相关知识，不能被用来推断该用户订单的具体原因。
 
-## 5. Product Principles
+## 5. 产品边界
 
 1. **Task First**：先判断用户试图完成的任务，再决定处理路径。
 2. **Evidence First**：回答必须有可追溯的知识或业务事实依据。
@@ -90,7 +90,7 @@ Answerability 是产品的最终决策机制，判断当前 task 的必要支持
 5. **Fail Safely**：证据不足、冲突、过期或越权时，不猜测，选择追问、拒绝或交接。
 6. **Evaluate Before Expanding**：先在受控离线场景验证机制，再考虑扩大能力范围。
 
-## 6. Current v1.0 Scope
+## 6. 当前版本边界
 
 - Task State 与澄清生命周期。
 - 受治理的知识检索与公共知识引用。
@@ -101,7 +101,7 @@ Answerability 是产品的最终决策机制，判断当前 task 的必要支持
 - trace、citation、处理记录与本地演示界面。
 - pytest / TestClient 与受控 fixture 上的离线评测。
 
-## 7. Evaluation
+## 7. 评估
 
 当前 release validation 使用 synthetic / curated / controlled fixture 上的 deterministic offline evaluation：
 
@@ -112,23 +112,23 @@ Answerability 是产品的最终决策机制，判断当前 task 的必要支持
 | Holdout evaluation | 18/18 |
 | Answerability evaluation | 9/9 |
 
-这些结果不是 production accuracy、真实金融正确率、真实客户满意度、FCR 或生产性能指标。它们仅说明当前代码在明确的离线契约和模拟数据上满足断言。
+这些结果不是 产品正确率、真实金融正确率、真实客户满意度、FCR 或生产性能指标。它们仅说明当前代码在明确的离线契约和模拟数据上满足断言。
 
-可选外部模型集成不属于本 release 的验收基础；发布验证不依赖真实模型调用。
+可选外部模型集成不属于本次的验收基础；发布验证不依赖真实模型调用。
 
-## 8. Safety and Compliance Boundary
+## 8. 安全与合规边界
 
 项目只使用模拟账户、订单、资金、规则和本地演示工单。它不连接真实券商、银行、行情、客户账户或交易执行系统。
 
 真实身份认证、生产授权、监管知识审批、数据保留、隐私治理、生产合规验证和坐席协同均不在当前范围。禁止向本地演示输入真实客户数据、账号、证件、密码、验证码或交易凭据。
 
-## 9. Success and Stop Conditions
+## 9. 成功与停止边界
 
 一个任务完成的最低条件是：所需用户信息齐备、所需事实或知识已验证、受众/归属/有效期符合要求，且 Answerability 为 `sufficient`。
 
 系统在以下情形停止自动完成：用户信息缺失、业务证据缺失、证据冲突、证据不可用、权限不足、风险请求或超出范围。对应的可见出口为 clarify、retrieve、reject 或 handoff。
 
-## 10. Future Scope
+## 10. 未来范围
 
 以下方向仍是 future scope，不是当前 v1.0 能力：
 
